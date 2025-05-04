@@ -19,20 +19,18 @@ COLORS = {
     'positive': '#2ecc71',
     'negative': '#e74c3c',
     'neutral': '#95a5a6',
-    'trendy': '#f39c12',
     'card_bg': '#ffffff',
     'analysis_bg': '#f1f8fe'
 }
 
 # Load models
 @st.cache_resource()
+@st.cache_resource()
 def load_models():
     return {
         'sentiment': joblib.load('models/sentiment_model.pkl'),
         'review_type': joblib.load('models/reviewtype_model.pkl'),
         'product_category': joblib.load('models/department_model.pkl'),
-        'trendiness': joblib.load('models/trend_model.pkl'),
-        'encoder': joblib.load('models/trend_label_encoder.pkl'),
         'topic_mapping': joblib.load('models/topic_category_mapping.pkl'),
         'review_keywords': joblib.load('models/reviewtype_keywords.pkl'),
         'vectorizer': joblib.load('models/vectorizer.pkl')
@@ -88,8 +86,7 @@ def main():
 
     st.title("📝 Review Classifier")
     st.markdown("### Paste a product review below to analyze its:")
-    st.markdown("- **Sentiment** • **Type** • **Category** • **Trendiness**")
-
+    st.markdown("• **Sentiment** • **Type** • **Category**")
     review = st.text_area(
         "Enter your review:", 
         height=150,
@@ -107,8 +104,6 @@ def main():
             sentiment = models['sentiment'].predict([cleaned_text])[0]
             review_type = models['review_type'].predict([cleaned_text])[0]
             category = models['product_category'].predict([cleaned_text])[0]
-            trend_num = models['trendiness'].predict([cleaned_text])[0]
-            trendiness = models['encoder'].inverse_transform([trend_num])[0]
             
             # Display basic results
             st.markdown("---")
@@ -158,25 +153,6 @@ def main():
                     <p style='font-size: 24px; font-weight: bold; color: {COLORS['text']};'>
                         {review_type}
                     </p>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                st.markdown(f"""
-                <div style='
-                    background: {COLORS['card_bg']};
-                    padding: 20px;
-                    border-radius: 10px;
-                    margin: 10px 0;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                '>
-                    <h3 style='color: {COLORS['primary']}; margin-top: 0;'>Trendiness</h3>
-                    <--p style='
-                        font-size: 24px; 
-                        font-weight: bold;
-                        color: {COLORS['trendy'] if trendiness == 'Trendy' else COLORS['neutral']};
-                    '>
-                        {trendiness}
-                   </p-->
                 </div>
                 """, unsafe_allow_html=True)
             
